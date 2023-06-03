@@ -1,0 +1,23 @@
+﻿{
+    "database": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "",
+        "database": "sowdb"
+    },
+    "slack": {
+        "token": "xoxb-5334120931383-5339205633559-jIqMb7kITwnTfyxSCv2oeIIf",
+        "appToken": "xapp-1-A05ASB33RC1-5377451607904-4b967f4926500f444686de44f72161bfa94f7f3b15c5c377b748746a6007338d"
+    },
+    "secret": "SECRECT KEY - THIS IS CREATED BY EGOR G.",
+    "emailFrom": "egor.gordienko@astronomic.com",
+    "smtpOptions": {
+        "host": "smtp.ethereal.email",
+        "port": 587,
+        "auth": {
+            "user": "darren55@ethereal.email",
+            "pass": "dd8AwQBpGjWgY79ahF"
+        }
+    }
+}
