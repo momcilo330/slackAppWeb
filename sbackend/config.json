@@ -4,7 +4,7 @@
         "port": 3306,
         "user": "root",
         "password": "",
-        "database": "sowdb"
+        "database": "sowdb111"
     },
     "slack": {
         "token": "xoxb-5334120931383-5339205633559-jIqMb7kITwnTfyxSCv2oeIIf",
