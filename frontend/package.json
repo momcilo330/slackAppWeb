@@ -1,10 +1,6 @@
 {
-    "name": "react-signup-verification-boilerplate",
+    "name": "web",
     "version": "1.0.0",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/cornflourblue/react-signup-verification-boilerplate.git"
-    },
     "license": "MIT",
     "scripts": {
         "build": "webpack --mode production",
