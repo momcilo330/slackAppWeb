@@ -18,7 +18,8 @@ function Nav() {
     return (
         <div>
             <nav className="navbar navbar-expand navbar-dark bg-dark">
-                <div className="navbar-nav">
+                <div className="navbar-nav"><h5 style={{color: "white", margin: "0px"}}>Streamlined SOW</h5></div>
+                <div className="navbar-nav" style={{marginLeft: "auto", marginRight: 0}}>
                     <NavLink exact to="/" className="nav-item nav-link"></NavLink>
                     <NavLink to="/sow" className="nav-item nav-link">Sow</NavLink>
                     <NavLink to="/profile" className="nav-item nav-link">Profile</NavLink>
