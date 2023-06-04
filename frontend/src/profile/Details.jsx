@@ -9,11 +9,11 @@ function Details({ match }) {
 
     return (
         <div>
-            <h1>My Profile</h1>
-            <p>
-                <strong>Name: </strong> {user.title} {user.firstName} {user.lastName}<br />
+            <h1>My Profile</h1><br /><br />
+            <h4>
+                <strong>Name: </strong> {user.firstName} {user.lastName}<br />
                 <strong>Email: </strong> {user.email}
-            </p>
+            </h4>
             <p><Link to={`${path}/update`}>Update Profile</Link></p>
         </div>
     );

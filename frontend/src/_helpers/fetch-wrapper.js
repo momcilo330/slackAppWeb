@@ -17,7 +17,6 @@ function get(url) {
 }
 
 function post(url, body) {
-    console.log('url===>: ', url);
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeader(url) },

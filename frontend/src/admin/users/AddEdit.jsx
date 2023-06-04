@@ -10,7 +10,7 @@ function AddEdit({ history, match }) {
     const isAddMode = !id;
     
     const initialValues = {
-        title: '',
+        title: 'Mr',
         firstName: '',
         lastName: '',
         email: '',
@@ -20,8 +20,8 @@ function AddEdit({ history, match }) {
     };
 
     const validationSchema = Yup.object().shape({
-        title: Yup.string()
-            .required('Title is required'),
+        // title: Yup.string()
+        //     .required('Title is required'),
         firstName: Yup.string()
             .required('First Name is required'),
         lastName: Yup.string()
@@ -91,7 +91,7 @@ function AddEdit({ history, match }) {
                     <Form>
                         <h1>{isAddMode ? 'Add User' : 'Edit User'}</h1>
                         <div className="form-row">
-                            <div className="form-group col">
+                            {/* <div className="form-group col">
                                 <label>Title</label>
                                 <Field name="title" as="select" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')}>
                                     <option value=""></option>
@@ -101,13 +101,13 @@ function AddEdit({ history, match }) {
                                     <option value="Ms">Ms</option>
                                 </Field>
                                 <ErrorMessage name="title" component="div" className="invalid-feedback" />
-                            </div>
-                            <div className="form-group col-5">
+                            </div> */}
+                            <div className="form-group col-6">
                                 <label>First Name</label>
                                 <Field name="firstName" type="text" className={'form-control' + (errors.firstName && touched.firstName ? ' is-invalid' : '')} />
                                 <ErrorMessage name="firstName" component="div" className="invalid-feedback" />
                             </div>
-                            <div className="form-group col-5">
+                            <div className="form-group col-6">
                                 <label>Last Name</label>
                                 <Field name="lastName" type="text" className={'form-control' + (errors.lastName && touched.lastName ? ' is-invalid' : '')} />
                                 <ErrorMessage name="lastName" component="div" className="invalid-feedback" />

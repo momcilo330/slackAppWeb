@@ -20,8 +20,8 @@ function Nav() {
             <nav className="navbar navbar-expand navbar-dark bg-dark">
                 <div className="navbar-nav">
                     <NavLink exact to="/" className="nav-item nav-link"></NavLink>
-                    <NavLink to="/profile" className="nav-item nav-link">Profile</NavLink>
                     <NavLink to="/sow" className="nav-item nav-link">Sow</NavLink>
+                    <NavLink to="/profile" className="nav-item nav-link">Profile</NavLink>
                     {user.role === Role.Admin &&
                         <NavLink to="/admin" className="nav-item nav-link">Admin</NavLink>
                     }

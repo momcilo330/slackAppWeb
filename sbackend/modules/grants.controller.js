@@ -6,15 +6,40 @@ const authorize = require('_middleware/authorize')
 const Role = require('_helpers/role');
 const slack = require('_helpers/slack');
 const grantsService = require('./grants.service');
+
 // Routes
 router.get('/', authorize(), getAll);
+router.post('/update', authorize(), update);
 
 module.exports = router;
 
 async function getAll(req, res, next) {
   const slackUsers = await slack.client.users.list();
-  console.log('slackUsers======>', slackUsers)
   grantsService.getAll()
-      .then(grants => res.json(grants))
+      .then(grants => {
+        let members = [];
+        if(slackUsers && slackUsers.members) {
+          slackUsers.members.forEach(user => {
+            if(!user.deleted && !user.is_bot && user.is_email_confirmed) {
+              if(grants && grants.length) {
+                grants.forEach(grant => {
+                  if(user.id === grant.dataValues.slack_id) {
+                    user.grant = grant.dataValues
+                  }
+                });
+              }
+              members.push(user);
+            }
+            
+          });
+        }
+        res.json(members)
+      })
       .catch(next);
+}
+
+async function update(req, res, next) {
+  grantsService.update(req.body, req.user.id).then(() => {
+    res.json({})
+  }).catch(next);
 }
