@@ -1,6 +1,7 @@
 const { App } = require('@slack/bolt');
 const config = require('config.json');
 const { token, appToken } = config.slack;
+const db = require('./db');
 module.exports = slack = new App({
   token: token,
   socketMode: true,
@@ -75,18 +76,43 @@ function addViewBlockRow(blocks) {
 
 slack.command('/sow', async ({ ack, body, client, logger }) => {
   console.log("--command detected!!!");
-  // Acknowledge the command request
   await ack();
 
-  try {
-    // Call views.open with the built-in client
+  const grant = await db.Grant.findOne({ where: { slack_id: body.user_id, status:1} });
+  if(!grant) {
     const result = await client.views.open({
-      // Pass a valid trigger_id within 3 seconds of receiving it
       trigger_id: body.trigger_id,
-      // View payload
       view: {
         type: 'modal',
-        // View identifier
+        callback_id: 'view_1',
+        title: {
+          type: 'plain_text',
+          text: 'Streamlined SOW'
+        },
+        close: {
+          "type": "plain_text",
+          "text": "Close",
+          "emoji": true
+        },
+        blocks: [
+          {
+            "type": "section",
+            "text": {
+              "type": "plain_text",
+              "text": "You don't have SOW access permission. Please ask to your admin",
+              "emoji": true
+            }
+          }
+        ]
+      }
+    });
+    return;
+  }
+  try {
+    const result = await client.views.open({
+      trigger_id: body.trigger_id,
+      view: {
+        type: 'modal',
         callback_id: 'view_1',
         title: {
           type: 'plain_text',
@@ -209,20 +235,15 @@ slack.command('/sow', async ({ ack, body, client, logger }) => {
 });
 
 slack.action('action-addrow', async ({ ack, body, client, logger }) => {
-  // Acknowledge the button request
   await ack();
 
   try {
     if (body.type !== 'block_actions' || !body.view) {
       return;
     }
-    // Call views.update with the built-in client
     const result = await client.views.update({
-      // Pass the view_id
       view_id: body.view.id,
-      // Pass the current hash to avoid race conditions
       hash: body.view.hash,
-      // View payload with updated blocks
       view: {
         type: body.view.type,
         // View identifier
@@ -240,7 +261,6 @@ slack.action('action-addrow', async ({ ack, body, client, logger }) => {
 });
 
 slack.view('view_1', async ({ ack, body, view, client, logger }) => {
-  console.log('ModalSubmitBody: ', body);
   await ack();
   const values = view['state']['values'];
   let estimates = [], curNo = 'N', oneEst = {};
@@ -269,7 +289,7 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
   
   console.log("payload====>", payload);
   // Save to DB
-
+  
   //
   try {
     payload.approveUsers.forEach(user => {
@@ -337,7 +357,6 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
 });
 
 slack.action('act_approve', async ({ ack, body, client, logger, say }) => {
-  console.log('ApproveBody: ', body);
   await ack();
   await say({
     text: `You've approved a proposal *#${body.actions[0]["value"]}*`
@@ -350,3 +369,4 @@ slack.action('act_deny', async ({ ack, body, client, logger, say }) => {
     text: `You've denied a proposal *#${body.actions[0]["value"]}*`
   });
 });
+
