@@ -41,6 +41,7 @@ function Sow({ match }) {
           <thead>
             <tr>
               <th scope="col">Name</th>
+              <th scope="col">Title</th>
               <th scope="col">Admin</th>
               <th scope="col">Owner</th>
               <th scope="col">Approve</th>
@@ -50,6 +51,7 @@ function Sow({ match }) {
           {users && users.map((user, index) =>
             <tr key={user.id}>
               <td><img src={user.profile.image_32} style={{marginRight: '14px'}} alt="" /><strong style={{fontSize: '20px',verticalAlign: 'middle'}}>{user.real_name}</strong></td>
+              <td>{user.profile.title}</td>
               <td>{user.is_admin ? <span class="badge badge-info">Yes</span> : 'No'}</td>
               <td>{user.is_owner ? <span class="badge badge-info">Yes</span> : 'No'}</td>
               <td><input type="checkbox" checked={checkedState[index]} style={{width: '24px',height: '24px',verticalAlign: 'middle'}} onChange={e => handleOnChange(index)} /></td>
