@@ -21,7 +21,7 @@ async function getAll(req, res, next) {
         let members = [];
         if(slackUsers && slackUsers.members) {
           slackUsers.members.forEach(user => {
-            if(!user.deleted && !user.is_bot && user.is_email_confirmed) {
+            if(!user.deleted && !user.is_bot && user.is_email_confirmed && !user.is_restricted) {
               if(grants && grants.length) {
                 grants.forEach(grant => {
                   if(user.id === grant.dataValues.slack_id) {

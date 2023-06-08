@@ -37,7 +37,7 @@ function Sow({ match }) {
     <div className="p-4">
       <div className="container">
         <h3 style={{marginBottom: '20px'}}>Access to generate SOWs</h3>
-        <table className="table">
+        <table className="table sowTable">
           <thead>
             <tr>
               <th scope="col">Name</th>
@@ -50,8 +50,8 @@ function Sow({ match }) {
           {users && users.map((user, index) =>
             <tr key={user.id}>
               <td><img src={user.profile.image_32} style={{marginRight: '14px'}} alt="" /><strong style={{fontSize: '20px',verticalAlign: 'middle'}}>{user.real_name}</strong></td>
-              <td>{user.is_admin ? <strong>Yes</strong> : 'No'}</td>
-              <td>{user.is_owner ? <strong>Yes</strong> : 'No'}</td>
+              <td>{user.is_admin ? <span class="badge badge-info">Yes</span> : 'No'}</td>
+              <td>{user.is_owner ? <span class="badge badge-info">Yes</span> : 'No'}</td>
               <td><input type="checkbox" checked={checkedState[index]} style={{width: '24px',height: '24px',verticalAlign: 'middle'}} onChange={e => handleOnChange(index)} /></td>
             </tr>
           )}
