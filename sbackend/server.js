@@ -15,15 +15,18 @@ app.use(cookieParser());
 app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
 //
 app.use(express.static(__dirname + '/public'));
+
+app.use('/accounts', require('./accounts/accounts.controller'));
+app.use('/grants', require('./modules/grants.controller'));
+app.use('/slacks', require('./slacks/slacks.controller'));
+app.use('/proposals', require('./modules/proposals.controller'));
+
 app.get('/*', (req, res) => {
   const purl = path.join(__dirname, 'public/index.html')
   res.sendFile(purl);
 });
 // api routes
-app.use('/accounts', require('./accounts/accounts.controller'));
-app.use('/grants', require('./modules/grants.controller'));
-app.use('/slacks', require('./slacks/slacks.controller'));
-app.use('/proposals', require('./modules/proposals.controller'));
+
 
 // swagger docs route
 // app.use('/api-docs', require('_helpers/swagger'));
