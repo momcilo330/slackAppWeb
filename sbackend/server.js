@@ -17,6 +17,7 @@ app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: 
 app.use('/accounts', require('./accounts/accounts.controller'));
 app.use('/grants', require('./modules/grants.controller'));
 app.use('/slacks', require('./slacks/slacks.controller'));
+app.use('/proposals', require('./modules/proposals.controller'));
 
 // swagger docs route
 // app.use('/api-docs', require('_helpers/swagger'));

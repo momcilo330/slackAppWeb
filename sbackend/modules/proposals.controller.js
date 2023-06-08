@@ -4,12 +4,12 @@ const Joi = require('joi');
 const validateRequest = require('_middleware/validate-request');
 const authorize = require('_middleware/authorize')
 const Role = require('_helpers/role');
-const slack = require('_helpers/slack');
-const grantsService = require('./grants.service');
+const proposalsService = require('./proposals.service');
 
 // Routes
 router.get('/', authorize(), getAll);
-router.post('/update', authorize(), update);
+router.post('/', authorize(), insert);
+// router.post('/update', authorize(), update);
 
 module.exports = router;
 
@@ -48,4 +48,9 @@ async function update(req, res, next) {
   grantsService.update(req.body, req.user.id).then(() => {
     res.json({})
   }).catch(next);
+}
+
+async function insert(req, res, next) {
+  console.log('insertBody: ', req.body);
+  res.json({})
 }

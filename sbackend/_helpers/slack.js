@@ -134,7 +134,7 @@ slack.command('/sow', async ({ ack, body, client, logger }) => {
           },
           {
             "type": "input",
-            "block_id": "approveUsers",
+            "block_id": "acceptors",
             "element": {
               "type": "multi_users_select",
               "placeholder": {
@@ -278,7 +278,7 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
   
   const payload = {
     projectName: view['state']['values']['projectName']['act_pname']['value'],
-    approveUsers: view['state']['values']['approveUsers']['act_users']['selected_users'],
+    acceptors: view['state']['values']['acceptors']['act_users']['selected_users'],
     estimates: estimates
   }
   let milestonListTxt = "", totalHours = 0;
@@ -289,10 +289,21 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
   
   console.log("payload====>", payload);
   // Save to DB
-  
+  const proposal = await db.Proposal.create({
+    slackId: body.view.id,
+    name: payload.projectName,
+    creator: body.user.id,
+    acceptor: payload.acceptors[0], // only one user at the moment, it will change...
+  });
+  if(proposal) {
+    payload.estimates.forEach(element => {
+      element.proposalId = proposal.id
+    });
+    await db.ProposalContent.bulkCreate(payload.estimates);
+  }
   //
   try {
-    payload.approveUsers.forEach(user => {
+    payload.acceptors.forEach(user => {
       client.chat.postMessage({
         channel: user,
         text: "Please check the proposal",
@@ -358,15 +369,81 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
 
 slack.action('act_approve', async ({ ack, body, client, logger, say }) => {
   await ack();
-  await say({
-    text: `You've approved a proposal *#${body.actions[0]["value"]}*`
-  });
+  const proposal = await db.Proposal.findOne({ where: { slackId: body.actions[0]["value"], acceptor: body.user.id} });
+  if(proposal) {
+    if(proposal.status == 1) {
+      slackViewNotify(client, body, `You've already approved the proposal #${body.actions[0]["value"]}`)
+    } else if(proposal.status == -1) {
+      slackViewNotify(client, body, `You've already denied the proposal #${body.actions[0]["value"]}`)
+    } else if(proposal.status == null) {
+      const result = await db.Proposal.update(
+        {status: 1, acceptor: body.user.id},
+        { where: { id: proposal.id } }
+      );
+      if(result && result[0]) {
+        await say({
+          text: `You've approved a proposal *#${body.actions[0]["value"]}*`
+        });
+      } else {
+        await say({
+          text: `Something wrong, please try again`
+        });
+      }
+    }
+  } else {
+    slackViewNotify(client, `You don't have a permission for this proposal.`)
+  }
 });
 
 slack.action('act_deny', async ({ ack, body, client, logger, say }) => {
   await ack();
-  await say({
-    text: `You've denied a proposal *#${body.actions[0]["value"]}*`
-  });
+  const proposal = await db.Proposal.findOne({ where: { slackId: body.actions[0]["value"], acceptor: body.user.id} });
+  if(proposal) {
+    if(proposal.status == 1) {
+      slackViewNotify(client, body, `You've already approved the proposal #${body.actions[0]["value"]}`)
+    } else if(proposal.status == -1) {
+      slackViewNotify(client, body, `You've already denied the proposal #${body.actions[0]["value"]}`)
+    } else if(proposal.status == null) {
+      const result = await db.Proposal.update(
+        {status: -1, acceptor: body.user.id},
+        { where: { id: proposal.id } }
+      );
+      if(result && result[0]) {
+        await say({
+          text: `You've denied the proposal *#${body.actions[0]["value"]}*`
+        });
+      } else {
+        await say({
+          text: `Something wrong, please try again`
+        });
+      }
+    }
+  } else {
+    slackViewNotify(client, `You don't have a permission for this proposal.`)
+  }
 });
+
+async function slackViewNotify(client, body, text) {
+  await client.views.open({
+    trigger_id: body.trigger_id,
+    view: {
+      type: 'modal',
+      callback_id: 'view_notify',
+      title: {
+        type: 'plain_text',
+        text: 'Info'
+      },
+      blocks: [
+        {
+          "type": "section",
+          "text": {
+            "type": "plain_text",
+            "text": text,
+            "emoji": true
+          }
+        }
+      ]
+    }
+  })
+}
 

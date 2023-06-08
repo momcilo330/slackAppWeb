@@ -20,10 +20,13 @@ async function initialize() {
     db.Account = require('../accounts/account.model')(sequelize);
     db.RefreshToken = require('../accounts/refresh-token.model')(sequelize);
     db.Grant = require('../modules/grants.model')(sequelize);
+    db.Proposal = require('../modules/proposals.model')(sequelize);
+    db.ProposalContent = require('../modules/proposalcontent.model')(sequelize);
     // define relationships
     db.Account.hasMany(db.RefreshToken, { onDelete: 'CASCADE' });
     db.RefreshToken.belongsTo(db.Account);
-    
+    db.Proposal.hasMany(db.ProposalContent, { onDelete: 'CASCADE' });
+    db.ProposalContent.belongsTo(db.Proposal);
     // sync all models with database
     await sequelize.sync();
 }
