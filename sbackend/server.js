@@ -14,9 +14,8 @@ app.use(cookieParser());
 app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
 //
 app.use(express.static(__dirname + '/public'));
-app.get('/test', (req, res) => {
-  console.log("arrived!")
-  res.send("hello@");
+app.get('/*', (req, res) => {
+  res.send("public/index.html");
 });
 // api routes
 app.use('/accounts', require('./accounts/accounts.controller'));

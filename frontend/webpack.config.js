@@ -36,6 +36,7 @@ module.exports = {
         // global app config object
         config: JSON.stringify({
             apiUrl: 'http://16.171.14.90:3000'
+            // apiUrl: 'http://localhost:3000'
         })
     }
 }
