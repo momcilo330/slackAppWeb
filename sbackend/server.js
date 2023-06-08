@@ -15,7 +15,7 @@ app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: 
 //
 app.use(express.static(__dirname + '/public'));
 app.get('/*', (req, res) => {
-  res.send("public/index.html");
+  res.send("index.html");
 });
 // api routes
 app.use('/accounts', require('./accounts/accounts.controller'));
