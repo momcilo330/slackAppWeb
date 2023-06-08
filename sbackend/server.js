@@ -1,6 +1,7 @@
 ﻿require('rootpath')();
 const express = require('express');
 const app = express();
+const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
@@ -15,7 +16,8 @@ app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: 
 //
 app.use(express.static(__dirname + '/public'));
 app.get('/*', (req, res) => {
-  res.send("index.html");
+  const purl = path.join(__dirname, 'public/index.html')
+  res.sendFile(purl);
 });
 // api routes
 app.use('/accounts', require('./accounts/accounts.controller'));
