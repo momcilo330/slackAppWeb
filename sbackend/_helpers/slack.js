@@ -1,6 +1,6 @@
 const { App } = require('@slack/bolt');
 const config = require('config.json');
-const { token, appToken } = config.slack_production;
+const { token, appToken } = config.slack;
 const db = require('./db');
 module.exports = slack = new App({
   token: token,
@@ -75,7 +75,6 @@ function addViewBlockRow(blocks) {
 }
 
 slack.command('/sow', async ({ ack, body, client, logger }) => {
-  console.log("--command detected!!!");
   await ack();
 
   const grant = await db.Grant.findOne({ where: { slack_id: body.user_id, status:1} });
@@ -202,10 +201,11 @@ slack.command('/sow', async ({ ack, body, client, logger }) => {
             }
           },
           {
-            "type": "divider"
+            "type": "divider",
           },
           {
             "type": "actions",
+            "block_id": "add_row_1",
             "elements": [
               {
                 "type": "button",
@@ -214,7 +214,7 @@ slack.command('/sow', async ({ ack, body, client, logger }) => {
                   "text": "+ ADD ROW",
                   "emoji": true
                 },
-                "value": "click_me_123",
+                "value": `${body.channel_id}`,
                 "action_id": "action-addrow"
               }
             ]
@@ -301,18 +301,27 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
     });
     await db.ProposalContent.bulkCreate(payload.estimates);
   }
+  // view['state']['values']['add_row']['action-addrow']['value']
+  const blocks = view['blocks'];
   //
   try {
     payload.acceptors.forEach(user => {
       client.chat.postMessage({
         channel: user,
-        text: "Please check the proposal",
+        text: "Please check the estimate",
         blocks: [
           {
             "type": "section",
             "text": {
               "type": "mrkdwn",
-              "text": `<@${body.user.id}> sent you a proposal - *#${body.view.id}*:\nWe estimate that your *${payload.projectName}* will take *${totalHours} hours*  with the following team contributions:`
+              "text": `<@${body.user.id}> sent you an estimate:`
+            }
+          },
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": `We estimate that your *${payload.projectName}* will take *${totalHours} hours*  with the following team contributions:`
             }
           },
           {
@@ -341,7 +350,7 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
                   "emoji": true,
                   "text": "Deny"
                 },
-                "value": `${body.view.id}`,
+                "value": `${body.view.id}__${body.user.id}__${blocks[blocks.length - 1]['elements'][0]['value']}`,
                 "style": "danger",
                 "action_id": "act_deny"
               },
@@ -353,13 +362,26 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
                   "text": "Approve"
                 },
                 "style": "primary",
-                "value": `${body.view.id}`,
+                "value": `${body.view.id}__${body.user.id}__${blocks[blocks.length - 1]['elements'][0]['value']}`,
                 "action_id": "act_approve"
               }
             ]
           }
         ]
-      });  
+      });
+      client.chat.postMessage({
+        channel: blocks[blocks.length - 1]['elements'][0]['value'],
+        text: "Please check the estimate",
+        blocks: [
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": `Request for approval has been sent via direct message to <@${user}>`
+            }
+          }
+        ]
+      })
     });
   }
   catch (error) {
@@ -369,12 +391,18 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
 
 slack.action('act_approve', async ({ ack, body, client, logger, say }) => {
   await ack();
-  const proposal = await db.Proposal.findOne({ where: { slackId: body.actions[0]["value"], acceptor: body.user.id} });
+  const slackId = body.actions[0]["value"].split("__")[0];
+  const poster = body.actions[0]["value"].split("__")[1];
+  const channel = body.actions[0]["value"].split("__")[2];
+  let estimate = `${body["message"]["blocks"][1]["text"]["text"]}\n${body["message"]["blocks"][2]["text"]["text"]}`;
+  estimate = estimate.split("\n").join("\n>");
+
+  const proposal = await db.Proposal.findOne({ where: { slackId: slackId, acceptor: body.user.id} });
   if(proposal) {
     if(proposal.status == 1) {
-      slackViewNotify(client, body, `You've already approved the proposal #${body.actions[0]["value"]}`)
+      slackViewNotify(client, body, `You've already approved the estimate`)
     } else if(proposal.status == -1) {
-      slackViewNotify(client, body, `You've already denied the proposal #${body.actions[0]["value"]}`)
+      slackViewNotify(client, body, `You've already denied the estimate`)
     } else if(proposal.status == null) {
       const result = await db.Proposal.update(
         {status: 1, acceptor: body.user.id},
@@ -382,8 +410,22 @@ slack.action('act_approve', async ({ ack, body, client, logger, say }) => {
       );
       if(result && result[0]) {
         await say({
-          text: `You've approved a proposal *#${body.actions[0]["value"]}*`
+          text: `You have approved this estimate. Please discuss the estimate with <@${poster}>` // *#${body.actions[0]["value"]}*
         });
+        // post to channel
+        client.chat.postMessage({
+          channel: channel,
+          text: `<@${body.user.id}> has approved this estimate.`,
+          blocks: [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": `<@${body.user.id}> has approved this estimate:\n>${estimate}`
+              }
+            }
+          ]
+        })
       } else {
         await say({
           text: `Something wrong, please try again`
@@ -391,18 +433,24 @@ slack.action('act_approve', async ({ ack, body, client, logger, say }) => {
       }
     }
   } else {
-    slackViewNotify(client, `You don't have a permission for this proposal.`)
+    slackViewNotify(client, body, `You don't have a permission for this proposal.`)
   }
 });
 
 slack.action('act_deny', async ({ ack, body, client, logger, say }) => {
   await ack();
-  const proposal = await db.Proposal.findOne({ where: { slackId: body.actions[0]["value"], acceptor: body.user.id} });
+  const slackId = body.actions[0]["value"].split("__")[0];
+  const poster = body.actions[0]["value"].split("__")[1];
+  const channel = body.actions[0]["value"].split("__")[2];
+  let estimate = `${body["message"]["blocks"][1]["text"]["text"]}\n${body["message"]["blocks"][2]["text"]["text"]}`;
+  estimate = estimate.split("\n").join("\n>");
+
+  const proposal = await db.Proposal.findOne({ where: { slackId: slackId, acceptor: body.user.id} });
   if(proposal) {
     if(proposal.status == 1) {
-      slackViewNotify(client, body, `You've already approved the proposal #${body.actions[0]["value"]}`)
+      slackViewNotify(client, body, `You've already approved the estimate`)
     } else if(proposal.status == -1) {
-      slackViewNotify(client, body, `You've already denied the proposal #${body.actions[0]["value"]}`)
+      slackViewNotify(client, body, `You've already denied the estimate`)
     } else if(proposal.status == null) {
       const result = await db.Proposal.update(
         {status: -1, acceptor: body.user.id},
@@ -410,8 +458,22 @@ slack.action('act_deny', async ({ ack, body, client, logger, say }) => {
       );
       if(result && result[0]) {
         await say({
-          text: `You've denied the proposal *#${body.actions[0]["value"]}*`
+          text: `You have denied this estimage. Please discuss the estimate with <@${poster}>`
         });
+        // post to channel
+        client.chat.postMessage({
+          channel: channel,
+          text: `<@${body.user.id}> has denied the estimate.`,
+          blocks: [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": `<@${body.user.id}> has denied the estimate:\n>${estimate}`
+              }
+            }
+          ]
+        })
       } else {
         await say({
           text: `Something wrong, please try again`
@@ -419,7 +481,7 @@ slack.action('act_deny', async ({ ack, body, client, logger, say }) => {
       }
     }
   } else {
-    slackViewNotify(client, `You don't have a permission for this proposal.`)
+    slackViewNotify(client, body, `You don't have a permission for this proposal.`)
   }
 });
 
