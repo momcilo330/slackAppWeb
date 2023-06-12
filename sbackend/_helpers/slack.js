@@ -303,7 +303,6 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
   }
   // view['state']['values']['add_row']['action-addrow']['value']
   const blocks = view['blocks'];
-  console.log("channel====>", blocks[blocks.length - 1]['elements'][0]['value'])
   //
   try {
     if(blocks[blocks.length - 1]['elements'][0]['value']) {
@@ -398,14 +397,6 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
             "text": {
               "type": "plain_text",
               "text": milestonListTxt,
-              "emoji": true
-            }
-          },
-          {
-            "type": "section",
-            "text": {
-              "type": "plain_text",
-              "text": "Do you approve our estimates? If so, please click 'Approve' and we will begin working. If not, please click 'Deny' and let us know how we can serve you better.",
               "emoji": true
             }
           }
