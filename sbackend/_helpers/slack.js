@@ -324,7 +324,15 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": `We estimate that your *${payload.projectName}* will take *${totalHours} hours*  with the following team contributions:\n${milestonListTxt}`
+                "text": `We estimate that your *${payload.projectName}* will take *${totalHours} hours*  with the following team contributions:`
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "plain_text",
+                "text": milestonListTxt,
+                "emoji": true
               }
             },
             {
@@ -381,7 +389,15 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
             "type": "section",
             "text": {
               "type": "mrkdwn",
-              "text": `We estimate that your *${payload.projectName}* will take *${totalHours} hours*  with the following team contributions:\n${milestonListTxt}`
+              "text": `We estimate that your *${payload.projectName}* will take *${totalHours} hours*  with the following team contributions:`
+            }
+          },
+          {
+            "type": "section",
+            "text": {
+              "type": "plain_text",
+              "text": milestonListTxt,
+              "emoji": true
             }
           }
         ]
