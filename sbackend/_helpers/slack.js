@@ -303,18 +303,87 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
   }
   // view['state']['values']['add_row']['action-addrow']['value']
   const blocks = view['blocks'];
+  console.log("channel====>", blocks[blocks.length - 1]['elements'][0]['value'])
   //
   try {
-    payload.acceptors.forEach(user => {
+    if(blocks[blocks.length - 1]['elements'][0]['value']) {
+      let acceptors = "";
+      payload.acceptors.forEach(user => {
+        acceptors += `<@${user}> `
+        client.chat.postMessage({
+          channel: user,
+          text: "Please check the estimate",
+          blocks: [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": `<@${body.user.id}> sent you an estimate:`
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": `We estimate that your *${payload.projectName}* will take *${totalHours} hours*  with the following team contributions:`
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "plain_text",
+                "text": milestonListTxt,
+                "emoji": true
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "plain_text",
+                "text": "Do you approve our estimates? If so, please click 'Approve' and we will begin working. If not, please click 'Deny' and let us know how we can serve you better.",
+                "emoji": true
+              }
+            },
+            {
+              "type": "actions",
+              "elements": [
+                {
+                  "type": "button",
+                  "text": {
+                    "type": "plain_text",
+                    "emoji": true,
+                    "text": "Deny"
+                  },
+                  "value": `${body.view.id}__${body.user.id}__${blocks[blocks.length - 1]['elements'][0]['value']}`,
+                  "style": "danger",
+                  "action_id": "act_deny"
+                },
+                {
+                  "type": "button",
+                  "text": {
+                    "type": "plain_text",
+                    "emoji": true,
+                    "text": "Approve"
+                  },
+                  "style": "primary",
+                  "value": `${body.view.id}__${body.user.id}__${blocks[blocks.length - 1]['elements'][0]['value']}`,
+                  "action_id": "act_approve"
+                }
+              ]
+            }
+          ]
+        });
+      });
+
       client.chat.postMessage({
-        channel: user,
-        text: "Please check the estimate",
+        channel: blocks[blocks.length - 1]['elements'][0]['value'],
+        text: "Requested Estimate",
         blocks: [
           {
             "type": "section",
             "text": {
               "type": "mrkdwn",
-              "text": `<@${body.user.id}> sent you an estimate:`
+              "text": `<@${body.user.id}> sent an estimate to ${acceptors}`
             }
           },
           {
@@ -339,50 +408,13 @@ slack.view('view_1', async ({ ack, body, view, client, logger }) => {
               "text": "Do you approve our estimates? If so, please click 'Approve' and we will begin working. If not, please click 'Deny' and let us know how we can serve you better.",
               "emoji": true
             }
-          },
-          {
-            "type": "actions",
-            "elements": [
-              {
-                "type": "button",
-                "text": {
-                  "type": "plain_text",
-                  "emoji": true,
-                  "text": "Deny"
-                },
-                "value": `${body.view.id}__${body.user.id}__${blocks[blocks.length - 1]['elements'][0]['value']}`,
-                "style": "danger",
-                "action_id": "act_deny"
-              },
-              {
-                "type": "button",
-                "text": {
-                  "type": "plain_text",
-                  "emoji": true,
-                  "text": "Approve"
-                },
-                "style": "primary",
-                "value": `${body.view.id}__${body.user.id}__${blocks[blocks.length - 1]['elements'][0]['value']}`,
-                "action_id": "act_approve"
-              }
-            ]
-          }
-        ]
-      });
-      client.chat.postMessage({
-        channel: blocks[blocks.length - 1]['elements'][0]['value'],
-        text: "Please check the estimate",
-        blocks: [
-          {
-            "type": "section",
-            "text": {
-              "type": "mrkdwn",
-              "text": `Request for approval has been sent via direct message to <@${user}>`
-            }
           }
         ]
       })
-    });
+    } else {
+      slackViewNotify(client, body, `Please try on channel`)
+    }
+    
   }
   catch (error) {
     logger.error(error);
