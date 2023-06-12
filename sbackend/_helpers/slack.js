@@ -76,7 +76,7 @@ function addViewBlockRow(blocks) {
 
 slack.command('/sow', async ({ ack, body, client, logger }) => {
   await ack();
-  // console.log("client====>", body)
+  console.log("Sowbody====>", body)
   const join = await client.conversations.join({channel: body.channel_id})
   console.log("join====>", join)
   const grant = await db.Grant.findOne({ where: { slack_id: body.user_id, status:1} });
