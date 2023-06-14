@@ -26,7 +26,7 @@ function Sow({ match }) {
     sowService.list().then(users => {
       let checkedArr = [];
       users.forEach(user => {
-        checkedArr.push(user.grant ? user.grant.status : false)
+        checkedArr.push(user ? user.status : false)
       });
       setCheckedState(checkedArr);
       setUsers(users)
@@ -50,10 +50,10 @@ function Sow({ match }) {
           <tbody>
           {users && users.map((user, index) =>
             <tr key={user.id}>
-              <td><img src={user.profile.image_32} style={{marginRight: '14px'}} alt="" /><strong style={{fontSize: '20px',verticalAlign: 'middle'}}>{user.real_name}</strong></td>
-              <td>{user.profile.title}</td>
-              <td>{user.is_admin ? <span class="badge badge-info">Yes</span> : 'No'}</td>
-              <td>{user.is_owner ? <span class="badge badge-info">Yes</span> : 'No'}</td>
+              <td><img src={user.image} style={{marginRight: '14px'}} alt="" /><strong style={{fontSize: '20px',verticalAlign: 'middle'}}>{user.name}</strong></td>
+              <td>{user.title}</td>
+              <td>{user.admin ? <span class="badge badge-info">Yes</span> : 'No'}</td>
+              <td>{user.owner ? <span class="badge badge-info">Yes</span> : 'No'}</td>
               <td><input type="checkbox" checked={checkedState[index]} style={{width: '24px',height: '24px',verticalAlign: 'middle'}} onChange={e => handleOnChange(index)} /></td>
             </tr>
           )}

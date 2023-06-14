@@ -1,6 +1,6 @@
 const { App } = require('@slack/bolt');
 const config = require('config.json');
-const { token, appToken } = config.slack_production;
+const { token, appToken } = config.isProduction ? config.slack_production : config.slack;
 const db = require('./db');
 module.exports = slack = new App({
   token: token,
