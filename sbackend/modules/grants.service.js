@@ -10,6 +10,7 @@ async function getAll() {
     order: [
       ['admin', 'DESC'],
       ['owner', 'DESC'],
+      ['status', 'DESC'],
       ['name', 'ASC']
     ]
   });
