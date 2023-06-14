@@ -40,6 +40,7 @@ cron.schedule('* * 24 * *', async () => {
 
 // start syncing when app start
 (async function() {      
+  console.log("----syncing slack users to DB----------")
   syncWithSlack();
 })();
 
