@@ -6,7 +6,7 @@ function model(sequelize) {
     const attributes = {
       slack_id: { type: DataTypes.STRING, allowNull: false },
       status: { type: DataTypes.BOOLEAN},
-      by_whom: { type: DataTypes.STRING, allowNull: false },
+      by_whom: { type: DataTypes.STRING, allowNull: true },
       name: { type: DataTypes.STRING, allowNull: false },
       title: { type: DataTypes.STRING, allowNull: true },
       image: { type: DataTypes.STRING, allowNull: false },

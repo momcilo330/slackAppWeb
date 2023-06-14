@@ -87,4 +87,25 @@ async function syncWithSlack() {
      })
     }
   }
+
+  for(let m = 0; m < slackUsers.length; m++) {
+    const slackUser = slackUsers[m];
+    let isExist = false;
+    for(let h = 0; h < grants.length; h++) {
+      const grant = grants[h];
+      if(slackUser.id == grant.dataValues.slack_id) {
+        isExist = true;
+      }
+    }
+    if(!isExist) {
+      await db.Grant.create({
+        slack_id: slackUser.id,
+        name: slackUser.real_name,
+        admin: slackUser.is_admin,
+        owner: slackUser.is_owner,
+        image: slackUser.profile.image_32,
+        title: slackUser.profile.title,
+      });
+    }
+  }
 }
