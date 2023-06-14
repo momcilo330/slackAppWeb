@@ -15,13 +15,7 @@ module.exports = router;
 
 async function getAll(req, res, next) {
   try {
-    grantsService.getAll({
-      order: [
-        ['admin', 'DESC'],
-        ['owner', 'DESC'],
-        ['name', 'ASC'],
-    ],
-    })
+    grantsService.getAll()
       .then(grants => {
         res.json(grants)
       })

@@ -6,7 +6,13 @@ module.exports = {
 };
 
 async function getAll() {
-  const grants = await db.Grant.findAll();
+  const grants = await db.Grant.findAll({
+    order: [
+      ['admin', 'DESC'],
+      ['owner', 'DESC'],
+      ['name', 'ASC']
+    ]
+  });
   return grants;
 }
 
