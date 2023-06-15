@@ -3,7 +3,7 @@ const router = express.Router();
 const authorize = require('_middleware/authorize')
 const Role = require('_helpers/role');
 const db = require('_helpers/db');
-
+import { Op } from "sequelize";
 // Routes
 router.get('/', authorize(), getAll);
 router.post('/', authorize(), insert);
