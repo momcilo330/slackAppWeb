@@ -17,7 +17,7 @@ function Estimates({ match }) {
         {contents.map((content, idx) => {
           return (
             <span key={idx} className="proposal_content">
-              {content.hours} hours: {content.role} - {content.tasks}
+              <strong style={{color: "green"}}>{content.hours}</strong> hours: <strong style={{color: "#0895f8"}}>{content.role}</strong> - <strong style={{color: "#3F51B5"}}>{content.tasks}</strong>
             </span>
           );
         })}
@@ -78,6 +78,7 @@ function Estimates({ match }) {
       {
         Header: 'Content',
         accessor: 'proposalcontents',
+        maxWidth: 220,
         Cell: ({ cell: { value } }) => <PSContent contents={value} />
       },
       {
