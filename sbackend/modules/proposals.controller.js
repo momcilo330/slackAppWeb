@@ -37,7 +37,7 @@ async function getAll(req, res, next) {
         ['createdAt', 'DESC'],
       ],
       where: {
-        '$acpt.id': {
+        '$acpt.id$': {
           [Op.ne]: null
         }
       }
