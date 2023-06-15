@@ -73,6 +73,7 @@ function Estimates({ match }) {
       {
         Header: 'Project Name',
         accessor: 'name',
+        maxWidth: 150,
       },
       {
         Header: 'Content',
@@ -142,6 +143,7 @@ function Estimates({ match }) {
                         style={{
                           borderBottom: 'solid 3px red',
                           color: 'black',
+                          maxWidth: column.maxWidth
                         }}
                     >
                       {column.render('Header')}
@@ -169,6 +171,7 @@ function Estimates({ match }) {
                             style={{
                               padding: '10px',
                               // border: 'solid 1px gray',
+                              maxWidth: cell.column.maxWidth
                             }}
                         >
                           {cell.render('Cell')}
