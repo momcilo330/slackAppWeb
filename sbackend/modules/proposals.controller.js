@@ -5,7 +5,7 @@ const Role = require('_helpers/role');
 const db = require('_helpers/db');
 
 // Routes
-router.get('/', getAll);
+router.get('/', authorize(), getAll);
 router.post('/', authorize(), insert);
 // router.post('/update', authorize(), update);
 
@@ -34,7 +34,12 @@ async function getAll(req, res, next) {
       ],
       order: [
         ['createdAt', 'DESC'],
-      ]
+      ],
+      where: {
+        acpt: {
+          [Op.ne]: null
+        }
+      }
     })
     res.json(results)
   } catch (error) {
