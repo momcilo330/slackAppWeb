@@ -78,7 +78,7 @@ function Estimates({ match }) {
       {
         Header: 'Content',
         accessor: 'proposalcontents',
-        maxWidth: 220,
+        maxWidth: 300,
         Cell: ({ cell: { value } }) => <PSContent contents={value} />
       },
       {
