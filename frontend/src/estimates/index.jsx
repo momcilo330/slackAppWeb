@@ -17,7 +17,7 @@ function Estimates({ match }) {
         {contents.map((content, idx) => {
           return (
             <span key={idx} className="proposal_content">
-              <strong style={{backgroundColor: "#c9ffc9"}}>{content.hours}hours </strong> : <strong style={{backgroundColor: "rgb(166 213 246)"}}>{content.role}</strong> - <strong style={{backgroundColor: "#DCE775"}}>{content.tasks}</strong>
+              <strong style={{color: "green"}}>{content.hours}</strong> : <strong style={{color: "#0895f8"}}>{content.role}</strong> - <strong style={{color: "#3F51B5"}}>{content.tasks}</strong>
             </span>
           );
         })}
