@@ -17,7 +17,7 @@ function Estimates({ match }) {
         {contents.map((content, idx) => {
           return (
             <span key={idx} className="proposal_content">
-              <strong style={{color: "green"}}>{content.hours}</strong> : <strong style={{color: "#0895f8"}}>{content.role}</strong> - <strong style={{color: "#3F51B5"}}>{content.tasks}</strong>
+              <strong style={{color: "green"}}>{content.hours}</strong>&nbsp;<strong>hours :</strong> <strong style={{color: "#0895f8"}}>{content.role}</strong> - <strong style={{color: "#3F51B5"}}>{content.tasks}</strong>
             </span>
           );
         })}
@@ -74,6 +74,7 @@ function Estimates({ match }) {
         Header: 'Project Name',
         accessor: 'name',
         maxWidth: 150,
+        fontWeight: "bold"
       },
       {
         Header: 'Content',
@@ -100,10 +101,12 @@ function Estimates({ match }) {
       {
         Header: 'Created Date',
         accessor: 'createdAt',
+        fontWeight: "bold",
         Cell: ({ cell: { value } }) => <PSDate time={value} />
       },
       {
         Header: 'Approved Date',
+        fontWeight: "bold",
         Cell: ({ row }) => <PSUpdatedDate row={row} />
       },
     ],
@@ -172,7 +175,8 @@ function Estimates({ match }) {
                             style={{
                               padding: '10px',
                               // border: 'solid 1px gray',
-                              maxWidth: cell.column.maxWidth
+                              maxWidth: cell.column.maxWidth,
+                              fontWeight: cell.column.fontWeight
                             }}
                         >
                           {cell.render('Cell')}
