@@ -39,3 +39,5 @@ typings
 
 # dist folder
 dist
+
+webpack.config.js
