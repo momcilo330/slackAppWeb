@@ -18,23 +18,14 @@ async function getAll() {
 }
 
 async function update(params, by_whom) {
-  const [grant, created] = await db.Grant.findOrCreate({
-    where: { slack_id: params.slack_id },
-    defaults: {
-      slack_id: params.slack_id,
-      status: params.status,
-      by_whom: by_whom,
-    }
-  });
-  if(!created) {
-    await db.Grant.update({
+  const grant =  await db.Grant.update({
       status: params.status,
       by_whom: by_whom,
     }, {
       where: {
-        slack_id: params.slack_id
+        id: params.id
       }
     });
-  }
-  return;
+
+  return grant;
 }

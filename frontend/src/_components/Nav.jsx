@@ -22,6 +22,7 @@ function Nav() {
                 <div className="navbar-nav" style={{marginLeft: "auto", marginRight: 0}}>
                     <NavLink exact to="/" className="nav-item nav-link"></NavLink>
                     <NavLink to="/sow" className="nav-item nav-link">Sow</NavLink>
+                    <NavLink to="/estimates" className="nav-item nav-link">Estimates</NavLink>
                     <NavLink to="/profile" className="nav-item nav-link">Profile</NavLink>
                     {user.role === Role.Admin &&
                         <NavLink to="/admin" className="nav-item nav-link">Admin</NavLink>

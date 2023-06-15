@@ -9,6 +9,7 @@ import { Profile } from '@/profile';
 import { Admin } from '@/admin';
 import { Account } from '@/account';
 import { Sow } from '@/sow';
+import { Estimates } from '@/estimates';
 
 function App() {
     const { pathname } = useLocation();  
@@ -28,6 +29,7 @@ function App() {
                 <PrivateRoute exact path="/" component={Home} />
                 <PrivateRoute path="/profile" component={Profile} />
                 <PrivateRoute path="/sow" component={Sow} />
+                <PrivateRoute path="/estimates" component={Estimates} />
                 <PrivateRoute path="/admin" roles={[Role.Admin]} component={Admin} />
                 <Route path="/account" component={Account} />
                 <Redirect from="*" to="/" />

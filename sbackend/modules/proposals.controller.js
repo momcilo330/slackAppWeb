@@ -1,13 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const Joi = require('joi');
-const validateRequest = require('_middleware/validate-request');
 const authorize = require('_middleware/authorize')
 const Role = require('_helpers/role');
-const proposalsService = require('./proposals.service');
+const db = require('_helpers/db');
 
 // Routes
-router.get('/', authorize(), getAll);
+router.get('/', getAll);
 router.post('/', authorize(), insert);
 // router.post('/update', authorize(), update);
 
@@ -15,33 +13,34 @@ module.exports = router;
 
 async function getAll(req, res, next) {
   try {
-    const slackUsers = await slack.client.users.list();
-    grantsService.getAll()
-      .then(grants => {
-        let members = [];
-        if(slackUsers && slackUsers.members) {
-          slackUsers.members.forEach(user => {
-            if(!user.deleted && !user.is_bot && user.is_email_confirmed) {
-              if(grants && grants.length) {
-                grants.forEach(grant => {
-                  if(user.id === grant.dataValues.slack_id) {
-                    user.grant = grant.dataValues
-                  }
-                });
-              }
-              members.push(user);
-            }
-            
-          });
+    // const results = await db.Proposal.findAll({
+    //   include: [
+    //     {model: db.ProposalContent}
+    //   ]
+    // })
+    const results = await db.Proposal.findAll({
+      include: [
+        {
+          model: db.Grant,
+          as: 'crt'
+        },
+        {
+          model: db.Grant,
+          as: 'acpt'
+        },
+        {
+          model: db.ProposalContent
         }
-        res.json(members)
-      })
-      .catch(next);
-    }
-    catch (error) {
-      console.log("error====>", error)
-    }
-  
+      ],
+      order: [
+        ['createdAt', 'DESC'],
+      ]
+    })
+    res.json(results)
+  } catch (error) {
+    console.log("error====>", error)
+  }
+
 }
 
 async function update(req, res, next) {
@@ -54,3 +53,8 @@ async function insert(req, res, next) {
   console.log('insertBody: ', req.body);
   res.json({})
 }
+// `
+//       SELECT * FROM proposals AS ps
+//       LEFT JOIN grants AS crt ON ps.creator = crt.slack_id
+//       LEFT JOIN grants AS apt ON ps.acceptor = apt.slack_id
+//       LEFT JOIN proposalcontents AS pc ON ps.id = pc.proposalId`

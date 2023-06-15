@@ -15,7 +15,7 @@ async function initialize() {
 
     // connect to db
     const sequelize = new Sequelize(database, user, password, { host: host, dialect: 'mysql', logging: false });
-
+    db.sequelize = sequelize;
     // init models and add them to the exported db object
     db.Account = require('../accounts/account.model')(sequelize);
     db.RefreshToken = require('../accounts/refresh-token.model')(sequelize);
@@ -27,6 +27,10 @@ async function initialize() {
     db.RefreshToken.belongsTo(db.Account);
     db.Proposal.hasMany(db.ProposalContent, { onDelete: 'CASCADE' });
     db.ProposalContent.belongsTo(db.Proposal);
+
+    db.Proposal.belongsTo(db.Grant, { as: "crt", foreignKey: 'creator', targetKey : 'slack_id' });
+    db.Proposal.belongsTo(db.Grant, { as: "acpt", foreignKey: 'acceptor', targetKey : 'slack_id' });
+
     // sync all models with database
     await sequelize.sync();
 }

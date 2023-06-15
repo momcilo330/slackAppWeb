@@ -1,0 +1,3 @@
+ALTER TABLE `grants` ADD UNIQUE(`slack_id`);
+
+ALTER TABLE `proposals` ADD CONSTRAINT `belongtogrant1` FOREIGN KEY (`acceptor`) REFERENCES `grants`(`slack_id`) ON DELETE NO ACTION ON UPDATE NO ACTION; ALTER TABLE `proposals` ADD CONSTRAINT `belongtogrant2` FOREIGN KEY (`creator`) REFERENCES `grants`(`slack_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;

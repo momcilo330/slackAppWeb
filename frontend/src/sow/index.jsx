@@ -12,7 +12,7 @@ function Sow({ match }) {
     );
     setCheckedState(updatedCheckedState);
     //
-    sowService.update({slack_id: users[position].id, status: updatedCheckedState[position]})
+    sowService.update({id: users[position].id, status: updatedCheckedState[position]})
     .then(() => {
         alertService.success('Update successful', { keepAfterRouteChange: true });
     })
@@ -40,11 +40,26 @@ function Sow({ match }) {
         <table className="table sowTable">
           <thead>
             <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Title</th>
-              <th scope="col">Admin</th>
-              <th scope="col">Owner</th>
-              <th scope="col">Approve</th>
+              <th scope="col" style={{
+                          borderBottom: 'solid 3px red',
+                          color: 'black',
+                        }}>Name</th>
+              <th scope="col" style={{
+                          borderBottom: 'solid 3px red',
+                          color: 'black',
+                        }}>Title</th>
+              <th scope="col" style={{
+                          borderBottom: 'solid 3px red',
+                          color: 'black',
+                        }}>Admin</th>
+              <th scope="col" style={{
+                          borderBottom: 'solid 3px red',
+                          color: 'black',
+                        }}>Owner</th>
+              <th scope="col" style={{
+                          borderBottom: 'solid 3px red',
+                          color: 'black',
+                        }}>Approve</th>
             </tr>
           </thead>
           <tbody>
@@ -52,8 +67,8 @@ function Sow({ match }) {
             <tr key={user.id}>
               <td><img src={user.image} style={{marginRight: '14px'}} alt="" /><strong style={{fontSize: '20px',verticalAlign: 'middle'}}>{user.name}</strong></td>
               <td>{user.title}</td>
-              <td>{user.admin ? <span class="badge badge-info">Yes</span> : 'No'}</td>
-              <td>{user.owner ? <span class="badge badge-info">Yes</span> : 'No'}</td>
+              <td>{user.admin ? <span className="badge badge-info">Yes</span> : 'No'}</td>
+              <td>{user.owner ? <span className="badge badge-info">Yes</span> : 'No'}</td>
               <td><input type="checkbox" checked={checkedState[index]} style={{width: '24px',height: '24px',verticalAlign: 'middle'}} onChange={e => handleOnChange(index)} /></td>
             </tr>
           )}
