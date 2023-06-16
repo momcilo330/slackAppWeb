@@ -5,11 +5,17 @@ const baseUrl = `${config.apiUrl}/proposals`;
 
 export const estimateService = {
   list,
+  pageData,
   update
 };
 
 function list() {
   return fetchWrapper.get(baseUrl);
+}
+
+function pageData(page, pageSize) {
+  const offset = page * pageSize;
+  return fetchWrapper.get(`${baseUrl}/pagedata?offset=${offset}&limit=${pageSize}`);
 }
 
 function update(params) {

@@ -7,6 +7,7 @@ var Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 // Routes
 router.get('/', authorize(), getAll);
+router.get('/pagedata', authorize(), pagedata);
 router.post('/', authorize(), insert);
 // router.post('/update', authorize(), update);
 
@@ -14,11 +15,6 @@ module.exports = router;
 
 async function getAll(req, res, next) {
   try {
-    // const results = await db.Proposal.findAll({
-    //   include: [
-    //     {model: db.ProposalContent}
-    //   ]
-    // })
     const results = await db.Proposal.findAll({
       include: [
         {
@@ -46,9 +42,42 @@ async function getAll(req, res, next) {
   } catch (error) {
     console.log("error====>", error)
   }
-
 }
 
+async function pagedata(req, res, next) {
+  try {
+    const results = await db.Proposal.findAll({
+      include: [
+        {
+          model: db.Grant,
+          as: 'crt'
+        },
+        {
+          model: db.Grant,
+          as: 'acpt'
+        },
+        {
+          model: db.ProposalContent
+        }
+      ],
+      // where: {
+      //   '$acpt.id$': {
+      //     [Op.ne]: null
+      //   }
+      // },
+      order: [
+        ['createdAt', 'DESC'],
+      ],
+      
+      offset: Number(req.query.offset), 
+      limit: Number(req.query.limit)
+    })
+    const count = await db.Proposal.count();
+    res.json({results:results, count: count})
+  } catch (error) {
+    console.log("error====>", error)
+  }
+}
 async function update(req, res, next) {
   grantsService.update(req.body, req.user.id).then(() => {
     res.json({})
