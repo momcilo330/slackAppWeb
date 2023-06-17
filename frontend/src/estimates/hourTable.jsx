@@ -103,106 +103,29 @@ const Sorting = ({ column }) => (
   </span>
 );
 
-function Table() {
-  const PSContent = ({ contents }) => {
-    return (
-      <>
-        {contents.map((content, idx) => {
-          return (
-            <span key={idx} className="proposal_content">
-              <strong style={{color: "green"}}>{content.hours}</strong>&nbsp;<strong>hours :</strong> <strong style={{color: "#0895f8"}}>{content.role}</strong> - <strong style={{color: "#3F51B5"}}>{content.tasks}</strong>
-            </span>
-          );
-        })}
-      </>
-    );
-  };
-  
-  const PSUser = ({ profile }) => {
-    return (
-      <>
-        <img src={profile.image} alt="" /> <strong style={{verticalAlign: "middle"}}>{profile.name}</strong>
-      </>
-    )
-  }
-  
-  const PSStatus = ({ status }) => {
-    if(status == -1) {
-      return (
-        <span className="badge badge-danger">Denied</span>
-      )
-    } else if(status == 1) {
-      return (
-        <span className="badge badge-success">Approved</span>
-      )
-    } else 
-      return (
-        <span className="badge badge-warning">Pending</span>
-      )
-  }
-  
-  const PSDate = ({ time }) => {
-    return (
-      <span>{moment(new Date(time)).format('MM/DD/YYYY')}</span>
-    )
-  }
-  const PSUpdatedDate = ({ row }) => {
-    if(row.original.status == null) {
-      return (
-        <></>
-      );
-    } else if(row.original.status == 1)
-      return (
-        <span style={{color: "green"}}>{moment(new Date(row.original.updatedAt)).format('MM/DD/YYYY')}</span>
-      );
-    else 
-      return (
-        <span style={{color: "red"}}>{moment(new Date(row.original.updatedAt)).format('MM/DD/YYYY')}</span>
-      );
-  }
+function HourTable() {
   const columns = React.useMemo(
     () => [
       {
-        Header: 'Project Name',
-        accessor: 'name',
-        maxWidth: 150,
-        fontWeight: "bold"
+        Header: 'Role',
+        accessor: 'role',
+        maxWidth: 100,
+        width: "150px",
+        // Cell: ({ cell: { value } }) => <PSContent contents={value} />
       },
       {
-        Header: 'Content',
-        accessor: 'proposalcontents',
-        maxWidth: 300,
-        Cell: ({ cell: { value } }) => <PSContent contents={value} />
-      },
-      {
-        Header: 'Creator',
-        accessor: 'crt',
+        Header: 'Tasks',
+        accessor: 'tasks',
         isSorted: true,
-        Cell: ({ cell: { value } }) => <PSUser profile={value} />
+        // Cell: ({ cell: { value } }) => <PSUser profile={value} />
       },
       {
-        Header: 'Acceptor',
-        accessor: 'acpt',
-        Cell: ({ cell: { value } }) => <PSUser profile={value} />
-      },
-      {
-        Header: 'Status',
-        accessor: 'status',
-        Cell: ({ cell: { value } }) => <PSStatus status={value} />
-        
-      },
-      {
-        Header: 'Created Date',
-        accessor: 'createdAt',
-        fontWeight: "bold",
-        Cell: ({ cell: { value } }) => <PSDate time={value} />
-      },
-      {
-        Header: 'Approved Date',
-        fontWeight: "bold",
-        accessor: 'updatedAt',
-        Cell: ({ row }) => <PSUpdatedDate row={row} />
-      },
+        Header: 'Hours',
+        accessor: 'hours',
+        maxWidth: 50,
+        width: "50px",
+        fontWeight: "bold"
+      }
     ],
     []
   )
@@ -220,8 +143,8 @@ function Table() {
 
   const [{ queryPageIndex, queryPageSize, totalCount, queryPageFilter, queryPageSortBy }, dispatch] = React.useReducer(reducer, initialState);
   const { isLoading, error, data, isSuccess } = useQuery(
-    ['aaaa', queryPageIndex, queryPageSize, queryPageFilter, queryPageSortBy],
-    () => estimateService.pageData(queryPageIndex, queryPageSize, queryPageFilter, queryPageSortBy),
+    ['hourlist', queryPageIndex, queryPageSize, queryPageFilter, queryPageSortBy],
+    () => estimateService.hoursData(queryPageIndex, queryPageSize, queryPageFilter, queryPageSortBy),
     {
       keepPreviousData: true,
       staleTime: Infinity,
@@ -299,9 +222,9 @@ function Table() {
 
   return (
     <div>
-      <div className="">
+      {/* <div className="">
           <UsersFilter onClickFilterCallback={onClickFilterCallback} defaultKeyword={keyword} />
-      </div>
+      </div> */}
       <table {...getTableProps()} className='table estimates-table'>
         <thead>
         {headerGroups.map(headerGroup => (
@@ -312,7 +235,8 @@ function Table() {
                       style={{
                         borderBottom: 'solid 3px red',
                         color: 'black',
-                        maxWidth: column.maxWidth
+                        maxWidth: column.maxWidth,
+                        width: column.width
                       }}
                   >
                     {column.render('Header')}
@@ -335,6 +259,7 @@ function Table() {
                             padding: '10px',
                             // border: 'solid 1px gray',
                             maxWidth: cell.column.maxWidth,
+                            width: cell.column.width,
                             fontWeight: cell.column.fontWeight
                           }}
                       >
@@ -399,4 +324,4 @@ function Table() {
   );
 }
 
-export default Table;
+export default HourTable;

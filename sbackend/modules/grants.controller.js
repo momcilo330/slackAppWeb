@@ -41,71 +41,77 @@ cron.schedule('* * 24 * *', async () => {
 // start syncing when app start
 (async function() {      
   console.log("----syncing slack users to DB----------")
-  syncWithSlack();
+  syncWithSlack();  
+  
 })();
 
 async function syncWithSlack() {
-  const sUsers = await slack.client.users.list();
-  const slackUsers = sUsers.members.filter(user => {
-    return !user.deleted && !user.is_bot && user.is_email_confirmed && !user.is_restricted
-  });
+  try {
+    const sUsers = await slack.client.users.list();
+    const slackUsers = sUsers.members.filter(user => {
+      return !user.deleted && !user.is_bot && user.is_email_confirmed && !user.is_restricted
+    });
 
-  const grants = await grantsService.getAll();
+    const grants = await grantsService.getAll();
 
-  for(let i = 0; i < grants.length; i++) {
-    const grant = grants[i];
-    let isExist = false;
-    for(let k = 0; k < slackUsers.length; k++) {
-      const slackUser = slackUsers[k];
-      if(grant.dataValues.slack_id == slackUser.id) {
-        isExist = true;
-        // different something
-        if(grant.dataValues.name != slackUser.real_name ||
-          grant.dataValues.admin != slackUser.is_admin ||
-          grant.dataValues.owner != slackUser.is_owner ||
-          grant.dataValues.image != slackUser.profile.image_32 ||
-          grant.dataValues.title != slackUser.profile.title) {
-            await db.Grant.update({
-              name: slackUser.real_name,
-              admin: slackUser.is_admin,
-              owner: slackUser.is_owner,
-              image: slackUser.profile.image_32,
-              title: slackUser.profile.title,
-            }, {
-              where: {
-                id: grant.dataValues.id
-              }
-            });
-          }
-      }
-    }
-    if(!isExist) {
-      await db.Grant.destroy({
-        where: {
-           id: grant.dataValues.id 
+    for(let i = 0; i < grants.length; i++) {
+      const grant = grants[i];
+      let isExist = false;
+      for(let k = 0; k < slackUsers.length; k++) {
+        const slackUser = slackUsers[k];
+        if(grant.dataValues.slack_id == slackUser.id) {
+          isExist = true;
+          // different something
+          if(grant.dataValues.name != slackUser.real_name ||
+            grant.dataValues.admin != slackUser.is_admin ||
+            grant.dataValues.owner != slackUser.is_owner ||
+            grant.dataValues.image != slackUser.profile.image_32 ||
+            grant.dataValues.title != slackUser.profile.title) {
+              await db.Grant.update({
+                name: slackUser.real_name,
+                admin: slackUser.is_admin,
+                owner: slackUser.is_owner,
+                image: slackUser.profile.image_32,
+                title: slackUser.profile.title,
+              }, {
+                where: {
+                  id: grant.dataValues.id
+                }
+              });
+            }
         }
-     })
-    }
-  }
-
-  for(let m = 0; m < slackUsers.length; m++) {
-    const slackUser = slackUsers[m];
-    let isExist = false;
-    for(let h = 0; h < grants.length; h++) {
-      const grant = grants[h];
-      if(slackUser.id == grant.dataValues.slack_id) {
-        isExist = true;
+      }
+      if(!isExist) {
+        await db.Grant.destroy({
+          where: {
+            id: grant.dataValues.id 
+          }
+      })
       }
     }
-    if(!isExist) {
-      await db.Grant.create({
-        slack_id: slackUser.id,
-        name: slackUser.real_name,
-        admin: slackUser.is_admin,
-        owner: slackUser.is_owner,
-        image: slackUser.profile.image_32,
-        title: slackUser.profile.title,
-      });
+
+    for(let m = 0; m < slackUsers.length; m++) {
+      const slackUser = slackUsers[m];
+      let isExist = false;
+      for(let h = 0; h < grants.length; h++) {
+        const grant = grants[h];
+        if(slackUser.id == grant.dataValues.slack_id) {
+          isExist = true;
+        }
+      }
+      if(!isExist) {
+        await db.Grant.create({
+          slack_id: slackUser.id,
+          name: slackUser.real_name,
+          admin: slackUser.is_admin,
+          owner: slackUser.is_owner,
+          image: slackUser.profile.image_32,
+          title: slackUser.profile.title,
+        });
+      }
     }
+  } catch (error) {
+    console.log("Error in SyncWithSlack====>", error)
   }
+  
 }
