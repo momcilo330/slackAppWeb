@@ -138,11 +138,11 @@ async function hoursData(req, res, next) {
   
   try {
     const results = await db.ProposalContent.findAll({
-      // where: {
-      //   'name': {
-      //     [Op.substring]: req.query.filter
-      //   }
-      // },
+      where: {
+        'role': {
+          [Op.substring]: req.query.filter
+        }
+      },
       order: [
         orders,
       ],
@@ -152,11 +152,11 @@ async function hoursData(req, res, next) {
       // filter, sortBy
     })
     const count = await db.ProposalContent.count({
-      // where: {
-      //   'name': {
-      //     [Op.substring]: req.query.filter
-      //   }
-      // }
+      where: {
+        'role': {
+          [Op.substring]: req.query.filter
+        }
+      }
     });
     res.json({results:results, count: count})
   } catch (error) {

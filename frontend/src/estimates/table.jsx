@@ -62,6 +62,11 @@ const UsersFilter = ({onClickFilterCallback, defaultKeyword}) => {
   const onClickSearch = () => {
       onClickFilterCallback(keyword)
   }
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      onClickFilterCallback(keyword)
+    }
+  }
   return (
       <div className="form__form-group">
           {/* <div className="col-md-4 px-0">
@@ -75,16 +80,15 @@ const UsersFilter = ({onClickFilterCallback, defaultKeyword}) => {
                   classNamePrefix="react-select"
               />
           </div> */}
-          <div className="col-md-4">
-              <div className="">
-                  <input 
-                      value={keyword}
-                      onChange={onKeywordChange}
-                      type="text"
-                      placeholder="Project Name"
-                  />
-                  <button className="text-blue pointer" onClick={onClickSearch}>Search</button>
-              </div>
+          <div className="">
+              <input 
+                  value={keyword}
+                  onChange={onKeywordChange}
+                  onKeyDown={handleKeyDown}
+                  type="text"
+                  placeholder="Project Name"
+              />
+              <button className="text-blue pointer" onClick={onClickSearch}>Search</button>
           </div>
       </div>
   )

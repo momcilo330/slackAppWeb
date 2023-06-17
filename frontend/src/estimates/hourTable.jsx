@@ -62,6 +62,11 @@ const UsersFilter = ({onClickFilterCallback, defaultKeyword}) => {
   const onClickSearch = () => {
       onClickFilterCallback(keyword)
   }
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      onClickFilterCallback(keyword)
+    }
+  }
   return (
       <div className="form__form-group">
           {/* <div className="col-md-4 px-0">
@@ -75,17 +80,16 @@ const UsersFilter = ({onClickFilterCallback, defaultKeyword}) => {
                   classNamePrefix="react-select"
               />
           </div> */}
-          <div className="col-md-4">
-              <div className="">
-                  <input 
-                      value={keyword}
-                      onChange={onKeywordChange}
-                      type="text"
-                      placeholder="Project Name"
-                  />
-                  <button className="text-blue pointer" onClick={onClickSearch}>Search</button>
-              </div>
-          </div>
+            <div className="">
+                <input 
+                    value={keyword}
+                    onChange={onKeywordChange}
+                    onKeyDown={handleKeyDown}
+                    type="text"
+                    placeholder="Search Role"
+                />
+                <button className="text-blue pointer" onClick={onClickSearch}>Search</button>
+            </div>
       </div>
   )
 }
@@ -222,10 +226,10 @@ function HourTable() {
 
   return (
     <div>
-      {/* <div className="">
+      <div className="">
           <UsersFilter onClickFilterCallback={onClickFilterCallback} defaultKeyword={keyword} />
-      </div> */}
-      <table {...getTableProps()} className='table estimates-table'>
+      </div>
+      <table {...getTableProps()} className='table estimates-table hoursList'>
         <thead>
         {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>
