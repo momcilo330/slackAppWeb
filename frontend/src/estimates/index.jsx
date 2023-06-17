@@ -13,13 +13,13 @@ function Estimates({ match }) {
   }
   const normalSection = (
     <div className="container">
-      <h3 style={{marginBottom: '20px'}}>Estimates</h3>
+      <h3 style={{marginBottom: '20px'}}>Total</h3>
       <Table />
     </div>
   );
   const hourListSection = (
     <div className="container">
-      <h3 style={{marginBottom: '20px'}}>Hours</h3>
+      <h3 style={{marginBottom: '20px'}}>Roles</h3>
       <HourTable />
     </div>
   )
@@ -32,7 +32,7 @@ function Estimates({ match }) {
             <input type="radio" name="topping" value="Normal" id="normal" checked={topping === "Normal"} onChange={onOptionChange}/>
             <label htmlFor="normal">Total</label>&nbsp;&nbsp;&nbsp;
             <input type="radio" name="topping" value="Hour" id="hour" checked={topping === "Hour"} onChange={onOptionChange}/>
-            <label htmlFor="hour">Hours</label>
+            <label htmlFor="hour">Roles</label>
           </div>
           
         </div>
